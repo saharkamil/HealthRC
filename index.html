@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Insurance Risk Calculator</title>
+    <style>
+        body {
+            background-color: rgb(228, 233, 235);
+             /*text-align: center;*/
+            font-family: Arial, sans-serif;
+            color: rgb(19, 18, 18);
+            margin-top: 100px;
+        }
+        input[type="submit"] {
+            background-color: #077120;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .section {
+            margin-bottom: 2px;
+            padding: 10px;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Welcome to the health insurance risk calculator website</h2><br>
+    <form method ="POST"> 
+        <div class = "section">
+        <label for="age">Enter your Age:</label>
+        <input type="number" id ="age" name="age" min="0" required >
+        </div>
+        <div class = "section">
+        <p>Enter your BMI: </p>
+       <input type="radio" id ="normal" name="bmi" value = "Normal">
+        <label for="normal">Normal </label><br>
+
+        <input type="radio" id ="overweight" name="bmi" value = "Overweight">
+        <label for="overweight">Overweight </label><br>
+
+        <input type="radio" id ="else" name="bmi" value = "Else">
+        <label for="else">Else </label><br>
+        </div>
+        <div class = "section">
+        <p>Enter your Blood Pressure: </p>
+        <input type="radio" id ="normal" name="bp" value = "Normal">
+        <label for="normal">Normal </label><br>
+
+        <input type="radio" id ="elevated" name="bp" value = "Elevated">
+        <label for="elevated">Elevated </label><br>
+
+        <input type="radio" id ="stage1" name="bp" value = "Stage1">
+        <label for="stage1">Stage1 </label><br>
+
+        <input type="radio" id ="stage2" name="bp" value = "Stage2">
+        <label for="stage2">Stage2 </label><br>
+
+        <input type="radio" id ="crisis" name="bp" value = "Crisis">
+        <label for="crisis">Crisis </label>
+       </div>
+       <div class = "section">
+        <p>Enter your Family Disease: </p>
+        <input type="checkbox" id ="diabetes" name="disease" value = "Diabetes">
+        <label for="diabetes">Diabetes </label><br>
+
+        <input type="checkbox" id ="cancer" name="disease" value = "Cancer">
+        <label for="cancer">Cancer </label><br>
+
+        <input type="checkbox" id ="Alzheimers" name="disease" value = "Alzheimer’s">
+        <label for="Alzheimers">Alzheimer’s </label>
+        </div>
+       
+        <input type="submit" value="Submit">
+        </form>
+
+    
+    <div id="result"></div>
+
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) =>{
+            e.preventDefault(); /*prevent page refreshing when submitting the form*/
+            //const formData = new FormData(form) /*colect all form data at once*/
+            const formData = new FormData(e.target)
+            /*convert a JavaScript object or value to a JSON string*/
+           // const res = Object.fromEntries(formData);
+           let res = Object.fromEntries(formData.entries());
+           res.disease = formData.getAll("disease");
+
+            const payload = JSON.stringify(res); //convert js object to a json string   
+            console.log("Payload:", payload);
+
+            // for(item of formData){
+            //    console.log(item[0],":", item[1]);
+            // };
+           
+            const data= fetch("https://riskcalculatorwebapp-ae-greug2eac3duf2h7.uaenorth-01.azurewebsites.net/api/riskcalculator",{ //use ajex and jquery instead
+                method: "POST",
+                body: payload,
+                headers: {
+                    'Content-Type': 'application/json',
+                 
+                }   
+            })
+           
+                .then( res => res.json())
+                .then (data =>
+                {console.log("Server response: ",data);
+               
+                document.getElementById("result").innerText = "Your risk calculation is  " + data.risk;
+            }) 
+     
+            .catch(error => console.error("Error:", error));
+            //https://github.com/saharkamil/RiskCalculator.git
+        });
+    </script>
+
+
+</body>
+</html>
